@@ -23,10 +23,11 @@ async def mem_handler(message: types.Message):
     with open(photo_path, 'rb') as photo:
         await bot.send_photo(chat_id=message.from_user.id, photo=photo, caption="It's a mem")
 
-        await message.answer_photo(photo=photo, caption="Mem")
+        # await message.answer_photo(photo=photo, caption="Mem")
 
 async def game_handler(message: types.Message):
     games = ['⚽', '🎰', '🏀', '🎯', '🎳', '🎲']
+
     await bot.send_dice(chat_id=message.from_user.id, emoji=random.choice(games))
 
 
