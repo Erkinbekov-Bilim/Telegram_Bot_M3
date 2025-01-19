@@ -4,6 +4,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
 import buttons
+from db import main_db
 
 class FSMReg(StatesGroup):
     fullname = State()
@@ -59,8 +60,17 @@ async def load_photo(message: types.Message, state: FSMContext):
 
 async def submit(message: types.Message, state: FSMContext):
     if message.text == "Yes":
-        await message.answer("Thank you for registration!", reply_markup=buttons.remove_keyboard)
-        await state.finish()
+
+        async with state.proxy() as data:
+            await main_db.sql_insert_registered(
+                fullname=data["fullname"],
+                age=data["age"],
+                email=data["email"],
+                city=data["city"],
+                photo=data["photo"],
+            )
+            await message.answer("Thank you for registration!", reply_markup=buttons.remove_keyboard)
+            await state.finish()
         # Запись в базу
 
     elif message.text == "Nah":
