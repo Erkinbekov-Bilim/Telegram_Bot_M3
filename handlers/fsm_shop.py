@@ -15,6 +15,7 @@ class FSMShop(StatesGroup):
     product_id = State()
     product_info = State()
     product_photo = State()
+    product_collection = State()
     product_submit = State()
 
 
@@ -65,13 +66,22 @@ async def load_product_photo(message: types.Message, state: FSMContext):
         data['product_photo'] = message.photo[-1].file_id
 
     await FSMShop.next()
+    await message.answer("Please enter product collection")
+
+
+async def load_product_collection(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['product_collection'] = message.text
+
+    await FSMShop.next()
     await message.answer("Please confirm product registration")
-    await message.answer_photo(photo = data['product_photo'], caption=f"Product ID: {data['product_id']}\n"
-                         f"Product Name: {data['product_name']}\n"
-                         f"Product Size: {data['product_size']}\n"
-                         f"Product Category: {data['product_category']}\n"
-                         f"Product Info: {data['product_info']}\n"
-                         f"Product Price: {data['product_price']}", reply_markup=buttons.submit)
+    await message.answer_photo(photo=data['product_photo'], caption=f"Product ID: {data['product_id']}\n"
+                                                                    f"Product Name: {data['product_name']}\n"
+                                                                    f"Product Size: {data['product_size']}\n"
+                                                                    f"Product Category: {data['product_category']}\n"
+                                                                    f"Product Collection: {data['product_collection']}\n"
+                                                                    f"Product Info: {data['product_info']}\n"
+                                                                    f"Product Price: {data['product_price']}", reply_markup=buttons.submit)
 
 async def submit(message: types.Message, state: FSMContext):
     if message.text == "Yes":
@@ -89,6 +99,11 @@ async def submit(message: types.Message, state: FSMContext):
                 product_category=data["product_category"],
                 product_info=data["product_info"],
                 product_id=data["product_id"]
+            )
+
+            await main_db.sql_insert_collection_product(
+                product_id=data["product_id"],
+                collection=data["product_collection"]
             )
 
             await message.answer("Thank you for registration!", reply_markup=buttons.remove_keyboard)
@@ -122,4 +137,5 @@ def register_handlers_fsm_shop(dp: Dispatcher):
     dp.register_message_handler(load_product_id, state=FSMShop.product_id)
     dp.register_message_handler(load_product_info, state=FSMShop.product_info)
     dp.register_message_handler(load_product_photo, content_types=['photo'], state=FSMShop.product_photo)
+    dp.register_message_handler(load_product_collection, state=FSMShop.product_collection)
     dp.register_message_handler(submit, state=FSMShop.product_submit)

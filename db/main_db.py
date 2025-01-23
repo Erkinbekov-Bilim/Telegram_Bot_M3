@@ -18,6 +18,7 @@ async def create_db():
     cursor.execute(queries.CREATE_TABLE_registered)
     cursor_store.execute(queries.CREATE_TABLE_store)
     cursor_store.execute(queries.CREATE_TABLE_product_details)
+    cursor_store.execute(queries.CREATE_TABLE_collection_products)
 
 async def sql_insert_registered(fullname, age, email, city, photo):
     cursor.execute(queries.INSERT_registered_query, (fullname, age, email, city, photo))
@@ -32,5 +33,11 @@ async def sql_insert_store(product_name, product_size, product_price, product_ph
 async def sql_insert_product_details(product_id, product_category, product_info):
     cursor_store.execute(queries.INSERT_product_details_QUERY, (
         product_id, product_category, product_info
+    ))
+    db_store.commit()
+
+async def sql_insert_collection_product(product_id, collection):
+    cursor_store.execute(queries.INSERT_collection_products_QUERY, (
+        product_id, collection
     ))
     db_store.commit()
