@@ -41,3 +41,35 @@ async def sql_insert_collection_product(product_id, collection):
         product_id, collection
     ))
     db_store.commit()
+
+
+# CRUD - Create, Read, Update, Delete
+# ==============================================================
+
+def get_db_connection():
+    conn = sqlite3.connect('db/store.sqlite3')
+    conn.row_factory = sqlite3.Row
+    return conn
+
+
+def fetch_all_products():
+    conn = get_db_connection()
+    products = conn.execute("""
+    SELECT * FROM store s
+    INNER JOIN product_details sd 
+    INNER JOIN collection_products cp
+    ON s.product_id = sd.product_id 
+    AND s.product_id = cp.product_id
+    """).fetchall()
+    conn.close()
+
+    return products
+
+def delete_product(product_id):
+    conn = get_db_connection()
+    conn.execute("DELETE FROM store WHERE product_id = ?", (product_id,))
+    conn.execute('DELETE FROM product_details WHERE product_id = ?', (product_id,))
+    conn.execute('DELETE FROM collection_products WHERE product_id = ?', (product_id,))
+    conn.commit()
+    conn.close()
+
