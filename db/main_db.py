@@ -44,6 +44,7 @@ async def sql_insert_collection_product(product_id, collection):
 
 
 # CRUD - Create, Read, Update, Delete
+# Read, Create and Delete
 # ==============================================================
 
 def get_db_connection():
@@ -72,4 +73,35 @@ def delete_product(product_id):
     conn.execute('DELETE FROM collection_products WHERE product_id = ?', (product_id,))
     conn.commit()
     conn.close()
+
+
+# CRUD - Update
+# ==============================================================
+
+def update_product_field(product_id, field_name, new_value):
+    conn = get_db_connection()
+
+    product_table = ['product_name', 'product_size', 'product_price', 'product_photo']
+    product_details_table = ['product_category', 'product_info']
+    product_collection_table = ['collection']
+
+    try:
+        if field_name in product_table:
+            query = f"UPDATE store SET {field_name} = ? WHERE product_id = ?"
+        elif field_name in product_details_table:
+            query = f"UPDATE product_details SET {field_name} = ? WHERE product_id = ?"
+        elif field_name in product_collection_table:
+            query = f"UPDATE collection_products SET {field_name} = ? WHERE product_id = ?"
+        else:
+            raise ValueError(f"Have not such field: {field_name}")
+
+        conn.execute(query, (new_value, product_id))
+        conn.commit()
+
+    except sqlite3.OperationalError as e:
+        print(f"Error: {e}")
+
+    finally:
+        conn.close()
+
 

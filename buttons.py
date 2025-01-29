@@ -14,6 +14,7 @@ start = ReplyKeyboardMarkup(resize_keyboard=True, row_width=2).add(
     KeyboardButton("/add_product"),
     KeyboardButton("/send_products"),
     KeyboardButton("/delete_products"),
+    KeyboardButton("/edit_products"),
 )
 
 

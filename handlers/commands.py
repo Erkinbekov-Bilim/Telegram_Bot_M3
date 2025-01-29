@@ -3,7 +3,7 @@
 from aiogram import Dispatcher, types
 import os
 from config import bot
-import random
+from random import sample
 
 
 
@@ -25,10 +25,25 @@ async def mem_handler(message: types.Message):
 
         # await message.answer_photo(photo=photo, caption="Mem")
 
+dice_options = ['⚽', '🎰', '🏀', '🎯', '🎳', '🎲']
 async def game_handler(message: types.Message):
-    games = ['⚽', '🎰', '🏀', '🎯', '🎳', '🎲']
+    selected_dices = sample(dice_options, 3)
+    selected_dice = sample(selected_dices, 1)[0]
 
-    await bot.send_dice(chat_id=message.from_user.id, emoji=random.choice(games))
+    bot_message = await bot.send_dice(chat_id=message.chat.id, emoji=selected_dice)
+    bot_score = bot_message.dice.value
+    print(bot_score)
+
+    user_message = await bot.send_dice(chat_id=message.chat.id, emoji=selected_dice)
+    user_score = user_message.dice.value
+    print(user_score)
+
+    if bot_score > user_score:
+        await message.answer("Bot wins")
+    elif bot_score < user_score:
+        await message.answer("You win! Congratulations!")
+    else:
+        await message.answer("It's a draw")
 
 
 

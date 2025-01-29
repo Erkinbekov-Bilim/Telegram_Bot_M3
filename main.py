@@ -1,7 +1,7 @@
 from aiogram import executor
 import logging
 from config import bot, admins, dp
-from handlers import commands, echo, quiz, webapp, fsm_reg, fsm_shop, send_products, delete_products
+from handlers import commands, echo, quiz, webapp, fsm_reg, fsm_shop, send_products, delete_products, edit_products, admin_group
 import buttons
 from db import main_db
 
@@ -25,6 +25,8 @@ fsm_reg.register_handlers_fsm_reg(dp)
 fsm_shop.register_handlers_fsm_shop(dp)
 send_products.register_handlers_delete_products(dp)
 delete_products.register_handlers_send_products(dp)
+edit_products.register_handlers_edit_products(dp)
+admin_group.register_handlers_welcome(dp)
 echo.register_handlers(dp)
 
 if __name__ == '__main__':
